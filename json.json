@@ -1,0 +1,63 @@
+[
+  {
+    "@odata.etag": "\"7\"",
+    "ItemInternalId": "18",
+    "ID": 18,
+    "Title": "c10afdb1-4cd0-4efe-97b6-ec086bf0315b",
+    "ID_VEHICULO": "01e39f16-3a34-4c02-af16-95bae55d66ec",
+    "PLACA": "KRV389",
+    "MARCA": "Renault",
+    "MODELO": "2022",
+    "COLOR": "GRIS LUNA",
+    "ESTADO": "APROBADO",
+    "TIPO_SOLICITUD": "Empresa de Apoyo",
+    "CONDUCTORES": "Mauricio Nacor Sanchez Espitia;Hernan Dario Herrera Lopez;Jesualdo Guerrero Mora;Alviz Jasan Gemer Fransisco",
+    "APLICA_COMEN": "ENVIADO",
+    "FECHA_INICIO": "2025-07-01",
+    "FECHA_FIN": "2026-11-06",
+    "PLANTA": "Gecelca 3",
+    "SST": "APROBADO",
+    "Modified": "2025-07-22T14:41:13Z",
+    "Created": "2025-07-10T22:29:20Z",
+    "Author": {
+      "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+      "Claims": "i:0#.f|membership|usergac@gecelca.com.co",
+      "DisplayName": "Adm Control Acceso",
+      "Email": "usergac@gecelca.com.co",
+      "Picture": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/UserPhoto.aspx?Size=L&AccountName=usergac@gecelca.com.co",
+      "Department": null,
+      "JobTitle": null
+    },
+    "Author#Claims": "i:0#.f|membership|usergac@gecelca.com.co",
+    "Editor": {
+      "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+      "Claims": "i:0#.f|membership|admapps365@gecelca.com.co",
+      "DisplayName": "admApps365",
+      "Email": "admApps365@gecelca.com.co",
+      "Picture": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/UserPhoto.aspx?Size=L&AccountName=admApps365@gecelca.com.co",
+      "Department": null,
+      "JobTitle": null
+    },
+    "Editor#Claims": "i:0#.f|membership|admapps365@gecelca.com.co",
+    "{Identifier}": "Lists%252fCAC_VEHICULOS%252f18_.000",
+    "{IsFolder}": false,
+    "{Thumbnail}": {
+      "Large": null,
+      "Medium": null,
+      "Small": null
+    },
+    "{Link}": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/listform.aspx?PageType=4&ListId=24a3bedf%2D7425%2D43a5%2Dad31%2D431df7fbddc4&ID=18&ContentTypeID=0x010076C0A2D81905E44A9A7DF535B4D1D140009CA2412C6E03EC48B8A5F498E6EC5D18",
+    "{Name}": "c10afdb1-4cd0-4efe-97b6-ec086bf0315b",
+    "{FilenameWithExtension}": "c10afdb1-4cd0-4efe-97b6-ec086bf0315b",
+    "{Path}": "Lists/CAC_VEHICULOS/",
+    "{FullPath}": "Lists/CAC_VEHICULOS/18_.000",
+    "{ContentType}": {
+      "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedContentType",
+      "Id": "0x010076C0A2D81905E44A9A7DF535B4D1D140009CA2412C6E03EC48B8A5F498E6EC5D18",
+      "Name": "Elemento"
+    },
+    "{ContentType}#Id": "0x010076C0A2D81905E44A9A7DF535B4D1D140009CA2412C6E03EC48B8A5F498E6EC5D18",
+    "{HasAttachments}": false,
+    "{VersionNumber}": "7.0"
+  }
+]
