@@ -66,4 +66,52 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Prevenir scroll doble en html y body */
+  html, body {
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  /* Asegurar que el root div de Next.js ocupe toda la altura */
+  #__next {
+    height: 100%;
+  }
+}
+
+/* Fixes para tablas con scroll */
+@layer components {
+  /* Asegurar que las tablas con scroll funcionen correctamente */
+  .table-container {
+    @apply relative w-full overflow-auto;
+  }
+  
+  /* Fix para headers sticky en tablas */
+  .table-sticky-header {
+    @apply sticky top-0 z-10 bg-gray-50;
+  }
+  
+  /* Prevenir que el contenido se oculte detrás de headers fijos */
+  .content-with-fixed-header {
+    @apply h-full overflow-auto;
+  }
+}
+
+/* Utilidades adicionales para manejo de overflow */
+@layer utilities {
+  /* Clase para contenedores que necesitan scroll interno */
+  .overflow-y-auto-important {
+    overflow-y: auto !important;
+  }
+  
+  /* Clase para prevenir scroll en elementos específicos */
+  .no-scroll {
+    overflow: hidden !important;
+  }
+  
+  /* Clase para contenedores de altura completa */
+  .h-full-screen {
+    height: 100vh;
+    height: 100dvh; /* Para navegadores que soportan dvh */
+  }
 }
