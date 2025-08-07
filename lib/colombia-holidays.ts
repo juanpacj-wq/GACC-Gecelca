@@ -166,6 +166,13 @@ export function getColombianHolidays(year: number): Holiday[] {
     type: 'easter'
   });
   
+  // Domingo de Pascua (el mismo día calculado)
+  holidays.push({
+    date: new Date(easter),
+    name: "Domingo de Pascua",
+    type: 'easter'
+  });
+  
   // Ascensión del Señor (39 días después de Pascua, se mueve al lunes)
   const ascension = new Date(easter);
   ascension.setDate(easter.getDate() + 39);
