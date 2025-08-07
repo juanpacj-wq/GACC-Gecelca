@@ -1,0 +1,93 @@
+{
+  "estado": "correcto",
+  "mensaje": "Solicitud encontrada",
+  "Datos": [
+    {
+      "@odata.etag": "\"35\"",
+      "ItemInternalId": "75",
+      "ID": 75,
+      "Title": "e8ae10f8-16f3-41e3-9c02-0fe267bfb5c6",
+      "TipodeSolicitud": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+        "Id": 0,
+        "Value": "Visitante"
+      },
+      "TipodeSolicitud#Id": 0,
+      "Empresa": "EMPRESA EJEMPLO",
+      "NIT_CED": 12345678,
+      "ResponsableEPPs": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+        "Id": 0,
+        "Value": "Gecelca"
+      },
+      "ResponsableEPPs#Id": 0,
+      "tipo_empresa": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+        "Id": 0,
+        "Value": "Persona Jurídica"
+      },
+      "tipo_empresa#Id": 0,
+      "Fechasolicitud": "2025-07-09",
+      "Planta": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+        "Id": 1,
+        "Value": "Gecelca 3"
+      },
+      "Planta#Id": 1,
+      "realizada_por": "lrojas@gecelca.com.co",
+      "nombre_solicitante": "LEONARDO FABIO ROJAS SEPULVEDA",
+      "terminada": "SI",
+      "inicio_aprobacion": "CREADA",
+      "VIGENCIA_INICIO": "2025-08-29",
+      "correo_externo": "lrojas@gecelca.com.co",
+      "nombre_externo": "No aplica",
+      "Fechainicio": "2025-07-09",
+      "Fechafin": "2025-08-29",
+      "Observacion": "Ejemplo para capacitación de acceso",
+      "epps_requeridos": "Visita administrativa",
+      "Modified": "2025-08-01T14:27:29Z",
+      "Created": "2025-07-09T14:39:56Z",
+      "etapa": "solicitud_aprobacion",
+      "Author": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+        "Claims": "i:0#.f|membership|lrojas@gecelca.com.co",
+        "DisplayName": "Leonardo Fabio Rojas Sepulveda",
+        "Email": "lrojas@GECELCA.COM.CO",
+        "Picture": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/UserPhoto.aspx?Size=L&AccountName=lrojas@GECELCA.COM.CO",
+        "Department": "Direccion de Transformacion Digital",
+        "JobTitle": "Contratista"
+      },
+      "Author#Claims": "i:0#.f|membership|lrojas@gecelca.com.co",
+      "Editor": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+        "Claims": "i:0#.f|membership|admapps365@gecelca.com.co",
+        "DisplayName": "admApps365",
+        "Email": "admApps365@gecelca.com.co",
+        "Picture": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/UserPhoto.aspx?Size=L&AccountName=admApps365@gecelca.com.co",
+        "Department": null,
+        "JobTitle": null
+      },
+      "Editor#Claims": "i:0#.f|membership|admapps365@gecelca.com.co",
+      "{Identifier}": "Lists%252fCAC_SOLICITUDES%252f75_.000",
+      "{IsFolder}": false,
+      "{Thumbnail}": {
+        "Large": null,
+        "Medium": null,
+        "Small": null
+      },
+      "{Link}": "https://gecelca.sharepoint.com/sites/GECELCAPROD/VICADMINISTRATIVA/SST/CAC/_layouts/15/listform.aspx?PageType=4&ListId=157e610e%2D6c92%2D48fb%2D9f42%2D557a2c165938&ID=75&ContentTypeID=0x010026073C3016C3BB489CE2B88269F089EF",
+      "{Name}": "e8ae10f8-16f3-41e3-9c02-0fe267bfb5c6",
+      "{FilenameWithExtension}": "e8ae10f8-16f3-41e3-9c02-0fe267bfb5c6",
+      "{Path}": "Lists/CAC_SOLICITUDES/",
+      "{FullPath}": "Lists/CAC_SOLICITUDES/75_.000",
+      "{ContentType}": {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedContentType",
+        "Id": "0x010026073C3016C3BB489CE2B88269F089EF",
+        "Name": "Elemento"
+      },
+      "{ContentType}#Id": "0x010026073C3016C3BB489CE2B88269F089EF",
+      "{HasAttachments}": false,
+      "{VersionNumber}": "35.0"
+    }
+  ]
+}
