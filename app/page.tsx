@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client"
 import Image from "next/image"
-import { Lock, AlertCircle, KeyRound } from "lucide-react"
+import { Lock, AlertCircle, KeyRound, CheckCircle2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,11 @@ export default function LoginPage() {
   const [recaptchaReady, setRecaptchaReady] = useState(false)
   const [recaptchaSiteKey, setRecaptchaSiteKey] = useState<string>("")
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
+  
+  // Nuevos estados para el control del flujo
+  const [isPasswordEnabled, setIsPasswordEnabled] = useState(false)
+  const [tokenRequested, setTokenRequested] = useState(false)
+  const [requestedNit, setRequestedNit] = useState("")
 
   // Verificar configuración de reCAPTCHA al cargar el componente
   useEffect(() => {
@@ -124,6 +129,12 @@ export default function LoginPage() {
       setError("Por favor completa ambos campos.")
       return
     }
+
+    // Verificar que se haya solicitado el token primero
+    if (!tokenRequested || !isPasswordEnabled) {
+      setError("Primero debe solicitar las credenciales con su NIT.")
+      return
+    }
     
     // Verificar que reCAPTCHA esté configurado
     if (!recaptchaSiteKey) {
@@ -163,6 +174,35 @@ export default function LoginPage() {
       setError("Error al conectar con el servidor: " + (error instanceof Error ? error.message : "Error desconocido"))
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Callback para cuando se solicita exitosamente el token
+  const handleTokenRequestSuccess = (nit: string) => {
+    setTokenRequested(true)
+    setIsPasswordEnabled(true)
+    setRequestedNit(nit)
+    setUser(nit) // Establecer automáticamente el NIT en el campo de usuario
+    setError("") // Limpiar cualquier error previo
+    
+    // Enfocar el campo de contraseña después de un breve delay
+    setTimeout(() => {
+      const passwordInput = document.querySelector('input[type="password"]') as HTMLInputElement
+      if (passwordInput) {
+        passwordInput.focus()
+      }
+    }, 100)
+  }
+
+  // Resetear el estado cuando cambia el usuario manualmente
+  const handleUserChange = (value: string) => {
+    setUser(value)
+    // Si el usuario cambia el NIT después de solicitar el token, resetear el estado
+    if (tokenRequested && value !== requestedNit) {
+      setTokenRequested(false)
+      setIsPasswordEnabled(false)
+      setRequestedNit("")
+      setPassword("") // Limpiar la contraseña
     }
   }
 
@@ -218,39 +258,57 @@ export default function LoginPage() {
           <Card className="-mt-10 w-full max-w-md md:max-w-lg bg-white shadow-2xl">
             <CardHeader className="text-center pb-4">
               <CardTitle className=" text-2xl md:text-3xl font-bold text-gray-800">Iniciar sesión</CardTitle>
-              <p className="text-sm md:text-base text-gray-600 mt-2">Ingrese su usuario y contraseña</p>
+              <p className="text-sm md:text-base text-gray-600 mt-2">
+                {!tokenRequested 
+                  ? ""
+                  : "Ingrese la contraseña recibida en su correo"}
+              </p>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
-               <div className="relative">
-                 <Input 
-                  type="text" 
-                  placeholder="Usuario" 
-                  value={user} 
-                  onChange={(e) => setUser(e.target.value)} 
-                  disabled={isLoading || !recaptchaSiteKey}
-                  autoComplete="username"
-                /><button
+                {/* Indicador de estado del proceso */}
+                {!tokenRequested }
+
+                {tokenRequested }
+
+                <div className="relative">
+                  <Input 
+                    type="text" 
+                    placeholder="Usuario (NIT)" 
+                    value={user} 
+                    onChange={(e) => handleUserChange(e.target.value)} 
+                    disabled={isLoading || !recaptchaSiteKey}
+                    autoComplete="username"
+                    className={tokenRequested ? "bg-green-50" : ""}
+                  />
+                  <button
                     type="button"
                     onClick={() => setIsForgotPasswordOpen(true)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 transition-colors ${
+                      !tokenRequested 
+                        ? "text-blue-600 hover:text-blue-700 animate-pulse" 
+                        : "text-gray-400 hover:text-gray-600"
+                    }`}
                     disabled={isLoading || !recaptchaSiteKey}
                     title="Solicitar contraseña"
                   >
                     <KeyRound className="w-4 h-4" />
                   </button>
                 </div>
+                
                 <div className="relative">
                   <Input 
                     type="password" 
-                    placeholder="Contraseña" 
+                    placeholder={!isPasswordEnabled ? "Primero solicite las credenciales" : "Contraseña"} 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
-                    disabled={isLoading || !recaptchaSiteKey}
+                    disabled={!isPasswordEnabled || isLoading || !recaptchaSiteKey}
                     autoComplete="current-password"
-                    className="pr-12"
+                    className={`pr-12 ${!isPasswordEnabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   />
-                  
+                  {!isPasswordEnabled && (
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  )}
                 </div>
                 
                 {/* Indicador de estado de reCAPTCHA */}
@@ -295,10 +353,14 @@ export default function LoginPage() {
                 
                 <Button 
                   type="submit"
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg mt-4" 
-                  disabled={isLoading || !recaptchaReady || !recaptchaSiteKey}
+                  className={`w-full h-12 font-semibold text-lg mt-4 ${
+                    !isPasswordEnabled 
+                      ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed" 
+                      : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
+                  disabled={!isPasswordEnabled || isLoading || !recaptchaReady || !recaptchaSiteKey}
                 >
-                  {isLoading ? "Procesando..." : !recaptchaReady ? "Cargando..." : !recaptchaSiteKey ? "No disponible" : "Ingresar"}
+                  {isLoading ? "Procesando..." : !recaptchaReady ? "Cargando..." : !recaptchaSiteKey ? "No disponible" : !isPasswordEnabled ? "Solicite credenciales primero" : "Ingresar"}
                 </Button>
 
                 {/* Link para recuperar contraseña */}
@@ -306,10 +368,16 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setIsForgotPasswordOpen(true)}
-                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    className={`text-sm hover:underline ${
+                      !tokenRequested 
+                        ? "text-blue-600 hover:text-blue-800 font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
                     disabled={isLoading}
                   >
-                    Solicitar contraseña
+                    {!tokenRequested 
+                      ? "Solicitar contraseña" 
+                      : "Solicitar contraseña nuevamente"}
                   </button>
                 </div>
               </form>
@@ -326,11 +394,12 @@ export default function LoginPage() {
       {/* Badge de reCAPTCHA - posición fija para evitar problemas de CSP */}
       <div className="grecaptcha-badge" style={{ visibility: 'hidden' }}></div>
 
-      {/* Diálogo de recuperación de contraseña */}
+      {/* Diálogo de recuperación de contraseña con callback de éxito */}
       <ForgotPasswordDialog 
         open={isForgotPasswordOpen} 
         onOpenChange={setIsForgotPasswordOpen}
         defaultUser={user}
+        onSuccess={handleTokenRequestSuccess}
       />
     </div>
   )

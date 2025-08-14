@@ -13,12 +13,14 @@ interface ForgotPasswordDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   defaultUser?: string
+  onSuccess?: (nit: string) => void // Nuevo callback para notificar éxito
 }
 
 export default function ForgotPasswordDialog({ 
   open, 
   onOpenChange,
-  defaultUser = ""
+  defaultUser = "",
+  onSuccess // Recibir el callback
 }: ForgotPasswordDialogProps) {
   const [idNit, setIdNit] = useState(defaultUser)
   const [loading, setLoading] = useState(false)
@@ -46,24 +48,25 @@ export default function ForgotPasswordDialog({
       // No resetear success y buttonLocked para mantener el estado después del éxito
     }
   }, [open, defaultUser, success])
-const maskEmail = (email: string): string => {
-  if (!email) return "";
 
-  const at = email.indexOf("@");
-  // Si no hay @, solo enmascara todo menos los 2 primeros
-  if (at === -1) {
-    const visible = Math.min(2, email.length);
-    return email.slice(0, visible) + "*".repeat(Math.max(0, email.length - visible));
-  }
+  const maskEmail = (email: string): string => {
+    if (!email) return "";
 
-  const local = email.slice(0, at);
-  const domain = email.slice(at); // incluye la @
+    const at = email.indexOf("@");
+    // Si no hay @, solo enmascara todo menos los 2 primeros
+    if (at === -1) {
+      const visible = Math.min(2, email.length);
+      return email.slice(0, visible) + "*".repeat(Math.max(0, email.length - visible));
+    }
 
-  const visible = Math.min(2, local.length);
-  const maskedLocal = "*".repeat(Math.max(0, local.length - visible));
+    const local = email.slice(0, at);
+    const domain = email.slice(at); // incluye la @
 
-  return local.slice(0, visible) + maskedLocal + domain;
-};
+    const visible = Math.min(2, local.length);
+    const maskedLocal = "*".repeat(Math.max(0, local.length - visible));
+
+    return local.slice(0, visible) + maskedLocal + domain;
+  };
 
   // Función para solicitar el token
   const handleRequestToken = async () => {
@@ -104,8 +107,21 @@ const maskEmail = (email: string): string => {
           setEmails(emailList)
         }
 
-        // Mostrar alerta de éxito
-        // Cerrar el diálogo después de mostrar el mensaje
+        // Notificar al componente padre sobre el éxito
+        if (onSuccess) {
+          onSuccess(idNit.trim())
+        }
+
+        // Cerrar el diálogo después de un breve delay para que el usuario vea el mensaje de éxito
+        setTimeout(() => {
+          onOpenChange(false)
+          // Resetear el estado después de cerrar
+          setTimeout(() => {
+            setSuccess(false)
+            setButtonLocked(false)
+            setEmails([])
+          }, 500)
+        }, 5000)
         
       } else {
         setError("La solicitud se realizó pero la respuesta no coincide con el formato esperado")
@@ -118,8 +134,17 @@ const maskEmail = (email: string): string => {
     }
   }
 
+  // Función para manejar el cierre del diálogo
+  const handleClose = () => {
+    // Si hay éxito y se está cerrando manualmente, notificar al padre
+    if (success && onSuccess && idNit.trim()) {
+      onSuccess(idNit.trim())
+    }
+    onOpenChange(false)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -140,6 +165,7 @@ const maskEmail = (email: string): string => {
               onChange={(e) => setIdNit(e.target.value)}
               disabled={loading || buttonLocked}
               autoComplete="username"
+              autoFocus
             />
             <p className="text-xs text-gray-500">
               Se enviará un correo con las credenciales de acceso
@@ -161,7 +187,7 @@ const maskEmail = (email: string): string => {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                Token solicitado correctamente. Revise su correo electrónico.
+                Credenciales solicitadas correctamente. Revise su correo electrónico.
               </AlertDescription>
             </Alert>
           )}
@@ -188,16 +214,16 @@ const maskEmail = (email: string): string => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleClose}
               disabled={loading}
             >
-              Cancelar
+              {success ? "Cerrar" : "Cancelar"}
             </Button>
             <Button
               type="button"
               onClick={handleRequestToken}
               disabled={loading || !idNit.trim() || buttonLocked}
-              className="min-w-[140px] bg-blue-600 hover:bg-blue-700 text-white font-semibold "
+              className="min-w-[140px] bg-blue-600 hover:bg-blue-700 text-white font-semibold"
             >
               {loading ? (
                 <>
@@ -216,7 +242,11 @@ const maskEmail = (email: string): string => {
           </div>
 
           {/* Nota informativa */}
-          {buttonLocked }
+          {!success && !buttonLocked && (
+            <div className="text-xs text-gray-500 text-center border-t pt-3">
+              <p>Una vez solicitadas las credenciales, podrá ingresar con su NIT y la contraseña recibida</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
