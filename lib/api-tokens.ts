@@ -11,6 +11,12 @@ const API_ENDPOINTS: Record<string, ApiEndpoint> = {
     token: isServer ? (process.env.AUTH_LOGIN_TOKEN || '') : '',
   },
   
+  // Reset password endpoint - NUEVO
+  AUTH_TOKEN_RESET_PSW: {
+    url: isServer ? (process.env.URL_TOKEN_RESET_PSW || '') : '/api/auth/reset-password',
+    token: isServer ? (process.env.AUTH_TOKEN_RESET_PSW || '') : '',
+  },
+  
   // Solicitud endpoints
   SOLICITUD: {
     url: isServer ? (process.env.SOLICITUD_URL || '') : '/api/solicitud',
@@ -157,6 +163,10 @@ export const getServerApiCredentials = (key: string): ApiEndpoint => {
     AUTH_LOGIN: {
       url: process.env.AUTH_LOGIN_URL || '',
       token: process.env.AUTH_LOGIN_TOKEN || '',
+    },
+    AUTH_TOKEN_RESET_PSW: {
+      url: process.env.URL_TOKEN_RESET_PSW || '',
+      token: process.env.AUTH_TOKEN_RESET_PSW || '',
     },
     SOLICITUD: {
       url: process.env.SOLICITUD_URL || '',

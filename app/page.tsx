@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client"
 import Image from "next/image"
-import { Lock, AlertCircle } from "lucide-react"
+import { Lock, AlertCircle, KeyRound } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/AuthContext"
 import Script from "next/script"
 import { getRecaptchaSiteKey, isRecaptchaConfigured } from "@/lib/recaptcha"
+import ForgotPasswordDialog from "@/components/ui/forgot-password-dialog"
 
 // Declaración de tipos para window
 declare global {
@@ -33,6 +34,7 @@ export default function LoginPage() {
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
   const [recaptchaReady, setRecaptchaReady] = useState(false)
   const [recaptchaSiteKey, setRecaptchaSiteKey] = useState<string>("")
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
 
   // Verificar configuración de reCAPTCHA al cargar el componente
   useEffect(() => {
@@ -213,29 +215,43 @@ export default function LoginPage() {
           </div>
           
           {/* Formulario */}
-          <Card className="w-full max-w-md md:max-w-lg bg-white shadow-2xl">
+          <Card className="-mt-10 w-full max-w-md md:max-w-lg bg-white shadow-2xl">
             <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl md:text-3xl font-bold text-gray-800">Iniciar sesión</CardTitle>
+              <CardTitle className=" text-2xl md:text-3xl font-bold text-gray-800">Iniciar sesión</CardTitle>
               <p className="text-sm md:text-base text-gray-600 mt-2">Ingrese su usuario y contraseña</p>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
-                <Input 
+               <div className="relative">
+                 <Input 
                   type="text" 
                   placeholder="Usuario" 
                   value={user} 
                   onChange={(e) => setUser(e.target.value)} 
                   disabled={isLoading || !recaptchaSiteKey}
                   autoComplete="username"
-                />
-                <Input 
-                  type="password" 
-                  placeholder="Contraseña" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  disabled={isLoading || !recaptchaSiteKey}
-                  autoComplete="current-password"
-                />
+                /><button
+                    type="button"
+                    onClick={() => setIsForgotPasswordOpen(true)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
+                    disabled={isLoading || !recaptchaSiteKey}
+                    title="Solicitar contraseña"
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input 
+                    type="password" 
+                    placeholder="Contraseña" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    disabled={isLoading || !recaptchaSiteKey}
+                    autoComplete="current-password"
+                    className="pr-12"
+                  />
+                  
+                </div>
                 
                 {/* Indicador de estado de reCAPTCHA */}
                 {recaptchaSiteKey && !recaptchaReady && (
@@ -284,6 +300,18 @@ export default function LoginPage() {
                 >
                   {isLoading ? "Procesando..." : !recaptchaReady ? "Cargando..." : !recaptchaSiteKey ? "No disponible" : "Ingresar"}
                 </Button>
+
+                {/* Link para recuperar contraseña */}
+                <div className="text-center mt-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPasswordOpen(true)}
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    disabled={isLoading}
+                  >
+                    Solicitar contraseña
+                  </button>
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -297,6 +325,13 @@ export default function LoginPage() {
       
       {/* Badge de reCAPTCHA - posición fija para evitar problemas de CSP */}
       <div className="grecaptcha-badge" style={{ visibility: 'hidden' }}></div>
+
+      {/* Diálogo de recuperación de contraseña */}
+      <ForgotPasswordDialog 
+        open={isForgotPasswordOpen} 
+        onOpenChange={setIsForgotPasswordOpen}
+        defaultUser={user}
+      />
     </div>
   )
 }
