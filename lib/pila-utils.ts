@@ -4,7 +4,6 @@ import { getNthBusinessDayOfMonth, LIMITE_SEG_SOCIAL } from "./colombia-holidays
 
 /**
  * Calcula las fechas de pago PILA basadas en el NIT y el período de visita
- * Ahora usa el cálculo dinámico de días hábiles en lugar del archivo calendario.json
  * @param nit - NIT de la empresa
  * @param fechaInicio - Fecha de inicio de la visita
  * @param fechaFin - Fecha fin de la visita

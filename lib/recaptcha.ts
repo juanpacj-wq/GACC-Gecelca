@@ -1,7 +1,7 @@
 // lib/recaptcha.ts
 /**
  * Constantes para la configuración de reCAPTCHA
- * Ahora usando variables de entorno en lugar de valores hardcodeados
+ * Usando variables de entorno de forma segura
  */
 
 // Para debugging - ver qué variables están disponibles
@@ -18,17 +18,17 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Usar valores por defecto si no están configuradas (temporal para desarrollo)
-export const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LdmppsrAAAAAIATE4kJ_OIBQ8AvAAjtWPc2WCRh';
-export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '6LdmppsrAAAAAItsJ0LbGehQn7ZrD7DPVaGuc2ED';
+// Usar las variables de entorno - sin valores por defecto hardcodeados
+export const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 // Validar que las claves estén configuradas
 if (!RECAPTCHA_SITE_KEY && typeof window !== 'undefined') {
-  console.warn('NEXT_PUBLIC_RECAPTCHA_SITE_KEY no está configurada en las variables de entorno, usando valor por defecto');
+  console.error('NEXT_PUBLIC_RECAPTCHA_SITE_KEY no está configurada en las variables de entorno');
 }
 
 if (!RECAPTCHA_SECRET_KEY && typeof window === 'undefined') {
-  console.warn('RECAPTCHA_SECRET_KEY no está configurada en las variables de entorno, usando valor por defecto');
+  console.error('RECAPTCHA_SECRET_KEY no está configurada en las variables de entorno');
 }
 
 /**
@@ -47,8 +47,7 @@ export interface RecaptchaVerifyResponse {
 /**
  * Verifica un token de reCAPTCHA v3 con la API de Google
  * Esta función es para uso del cliente (llama al endpoint local)
- * 
- * @param token - Token generado por reCAPTCHA en el cliente
+ * * @param token - Token generado por reCAPTCHA en el cliente
  * @param action - Acción esperada para la verificación
  * @param minScore - Puntuación mínima aceptable (0.0 a 1.0)
  * @returns Objeto con el resultado de la verificación
@@ -129,14 +128,13 @@ export async function verifyRecaptchaToken(
 /**
  * Verifica un token de reCAPTCHA directamente desde el servidor
  * Esta función debe ser llamada solo desde el servidor (API routes)
- * 
- * @param token - Token generado por reCAPTCHA en el cliente
- * @param secretKey - Clave secreta de reCAPTCHA (opcional, usa variable de entorno por defecto)
+ * * @param token - Token generado por reCAPTCHA en el cliente
+ * @param secretKey - Clave secreta de reCAPTCHA (requerida)
  * @returns Respuesta completa de la API de reCAPTCHA
  */
 export async function verifyRecaptchaTokenServer(
   token: string,
-  secretKey: string = RECAPTCHA_SECRET_KEY
+  secretKey?: string
 ): Promise<RecaptchaVerifyResponse> {
   if (!token) {
     console.error('No token provided for reCAPTCHA verification');
@@ -146,7 +144,10 @@ export async function verifyRecaptchaTokenServer(
     };
   }
 
-  if (!secretKey) {
+  // Usar la clave secreta del parámetro o de la variable de entorno
+  const finalSecretKey = secretKey || RECAPTCHA_SECRET_KEY;
+
+  if (!finalSecretKey) {
     console.error('No secret key configured for reCAPTCHA');
     return {
       success: false,
@@ -156,7 +157,7 @@ export async function verifyRecaptchaTokenServer(
 
   // Construir el cuerpo de la petición con URLSearchParams
   const formData = new URLSearchParams();
-  formData.append('secret', secretKey);
+  formData.append('secret', finalSecretKey);
   formData.append('response', token);
   
   try {
@@ -220,8 +221,7 @@ export async function verifyRecaptchaTokenServer(
 
 /**
  * Función auxiliar para validar el formato de un token reCAPTCHA
- * 
- * @param token - Token a validar
+ * * @param token - Token a validar
  * @returns true si el token tiene un formato válido
  */
 export function isValidRecaptchaToken(token: string): boolean {
@@ -243,8 +243,7 @@ export function isValidRecaptchaToken(token: string): boolean {
 /**
  * Función para obtener información del dominio desde el hostname
  * Útil para verificar que el token viene del dominio correcto
- * 
- * @param hostname - Hostname reportado por reCAPTCHA
+ * * @param hostname - Hostname reportado por reCAPTCHA
  * @returns true si el hostname es válido para esta aplicación
  */
 export function isValidHostname(hostname?: string): boolean {
@@ -255,7 +254,6 @@ export function isValidHostname(hostname?: string): boolean {
   // Lista de hostnames válidos desde variables de entorno
   const validHostnames = [
     'localhost',
-    'gacc.gecelca.com.co', // Valor por defecto
     process.env.NEXT_PUBLIC_APP_DOMAIN,
     // Extraer dominio de NEXT_PUBLIC_APP_URL si existe
     process.env.NEXT_PUBLIC_APP_URL ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname : null,
@@ -280,8 +278,8 @@ export const getRecaptchaConfig = () => {
   const minScoreFromEnv = process.env.RECAPTCHA_MIN_SCORE ? parseFloat(process.env.RECAPTCHA_MIN_SCORE) : null;
   
   return {
-    siteKey: RECAPTCHA_SITE_KEY,
-    secretKey: RECAPTCHA_SECRET_KEY,
+    siteKey: RECAPTCHA_SITE_KEY || '',
+    secretKey: RECAPTCHA_SECRET_KEY || '',
     minScore: minScoreFromEnv ?? (isDevelopment ? 0.3 : 0.5), // Score más bajo en desarrollo
     timeout: isDevelopment ? 10000 : 5000, // Timeout más largo en desarrollo
     actions: {
@@ -293,10 +291,15 @@ export const getRecaptchaConfig = () => {
 };
 
 /**
- * Función para verificar si reCAPTCHA está configurado correctamente
- * Siempre retorna true ya que tenemos valores por defecto
+ * Función para verificar si reCAPTCHA está configurado correctamente.
+ * Se adapta para verificar solo la clave pública en el cliente.
  */
 export function isRecaptchaConfigured(): boolean {
+  if (typeof window !== 'undefined') {
+    // En el lado del cliente, solo necesitamos la SITE KEY
+    return !!RECAPTCHA_SITE_KEY;
+  }
+  // En el lado del servidor, necesitamos ambas claves
   return !!(RECAPTCHA_SITE_KEY && RECAPTCHA_SECRET_KEY);
 }
 
@@ -306,8 +309,7 @@ export function isRecaptchaConfigured(): boolean {
 export function getRecaptchaSiteKey(): string {
   if (!RECAPTCHA_SITE_KEY) {
     console.error('reCAPTCHA site key no está configurada');
-    // Retornar el valor por defecto
-    return '6LdmppsrAAAAAIATE4kJ_OIBQ8AvAAjtWPc2WCRh';
+    return '';
   }
   return RECAPTCHA_SITE_KEY;
 }

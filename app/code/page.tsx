@@ -20,14 +20,14 @@ export default function AccessControlPage() {
 
   // Verificar autenticación al cargar la página
   useEffect(() => {
-    // Si no está cargando y no está autenticado, redirigir al login
+    // Si no está cargando y no está autenticado, redirigir
     if (!isLoading && !isAuthenticated) {
-      router.push("/")
+      router.push("/unauthorized")
     }
   }, [isLoading, isAuthenticated, router])
 
-  // Si está cargando, mostrar un indicador de carga
-  if (isLoading) {
+  // Si está cargando o no está autenticado, mostrar un indicador de carga para evitar mostrar la página brevemente
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>

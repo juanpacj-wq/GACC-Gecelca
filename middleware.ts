@@ -9,8 +9,8 @@ import {
 } from './middleware/security-headers'
 
 // Definir las rutas protegidas y las rutas de autenticación
-const protectedPaths = ['/dashboard']
-const authPaths = ['/', '/code']
+const protectedPaths = ['/dashboard', '/code']
+const authPaths = ['/']
 
 // Rutas excluidas del rate limiting (archivos estáticos, etc.)
 const rateLimitExcludedPaths = [
@@ -83,9 +83,8 @@ export function middleware(request: NextRequest) {
 
   // Si intenta acceder a una ruta protegida sin autenticación
   if (protectedPaths.some(route => path.startsWith(route)) && !isAuthenticated) {
-    // Redirigir al login con la URL original como parámetro de retorno
-    const redirectUrl = new URL('/', request.url)
-    redirectUrl.searchParams.set('returnUrl', path)
+    // Redirigir a la página de no autorizado
+    const redirectUrl = new URL('/unauthorized', request.url)
     const response = NextResponse.redirect(redirectUrl)
     
     // Aplicar headers de seguridad a la redirección
