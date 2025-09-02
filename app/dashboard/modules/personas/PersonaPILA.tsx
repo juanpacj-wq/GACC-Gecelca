@@ -564,7 +564,6 @@ export default function PersonaPILA({
              {/* Mensaje informativo cuando se selecciona una fecha */}
             {fechaSeleccionada !== null && fechasCorte.find(f => f.id === fechaSeleccionada) && (
               <Alert className="bg-green-50 border-green-200 py-2">
-                <Calendar className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-700 text-sm font-medium">
                   Fecha de corte seleccionada: <span className="font-bold">{fechasCorte.find(f => f.id === fechaSeleccionada)?.fecha}</span>
                   
@@ -678,13 +677,6 @@ export default function PersonaPILA({
             mensaje.tipo === 'error' ? 'bg-red-50 border-red-200' : 
             'bg-blue-50 border-blue-200'
           }`}>
-            {mensaje.tipo === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-            ) : mensaje.tipo === 'error' ? (
-              <AlertCircle className="h-4 w-4 text-red-600" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-blue-600" />
-            )}
             <AlertDescription className={`text-sm ${
               mensaje.tipo === 'success' ? 'text-green-700' :mensaje.tipo === 'error' ? 'text-red-700' : 
               'text-blue-700'

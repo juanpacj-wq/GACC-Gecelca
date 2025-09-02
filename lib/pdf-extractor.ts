@@ -60,39 +60,40 @@ export async function extractNumbersFromPdf(fileData: ArrayBuffer): Promise<PdfE
       }
     }
     
-    // Aplicar los pasos de limpieza en el orden correcto:
-    
-    // 1. Eliminar todos los caracteres del alfabeto [aA-zZ]
-    allText = allText.replace(/[a-zA-Z]/g, ' ');
-    
-    // 2. Eliminar puntos y comas
-    allText = allText.replace(/[.,]/g, ' ');
-    
-    // 3. Eliminar operadores y otros caracteres especiales
-    allText = allText.replace(/[+\-*\/=%()\[\]{}]/g, ' ');
-    
-    // 4. Eliminar espacios extras y normalizar
-    allText = allText.replace(/\s+/g, ' ').trim();
-    
-    // 5. Extraer solo números con 4 o más dígitos
+    // Limpieza básica
+    allText = allText
+        .replace(/[^0-9.,\-+*/=%()\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // Quitar montos con separador de miles por coma (p. ej., 1,234,567.89)
+    allText = allText
+        .replace(/\b\d{1,3}(,\d{3})+(\.\d+)?\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // Tokenización y filtro
     const tokens = allText.split(/\s+/);
     const filteredTokens = tokens.filter(token => {
-      // Verificar si es un número y tiene 4 o más dígitos
-      return /^\d+$/.test(token) && token.length >= 6;
+        if (token === '(' || token === ')' || token === '.' || token === ',' || token === '-') return false;
+        if (token === '0') return false;
+        const digitOnly = token.replace(/[.,\-]/g, '');
+        return digitOnly.length >= 5;
     });
+
+    const filteredText = filteredTokens.join(' ');
     
-    if (filteredTokens.length > 0) {
+    if (filteredText) {
       // Unir los números encontrados con espacios
-      const extractedText = filteredTokens.join(' ');
       return {
         success: true,
-        text: extractedText
+        text: filteredText
       };
     } else {
       return {
         success: false,
         text: '',
-        error: 'No se encontraron números con 4 o más dígitos en el PDF.'
+        error: 'No se encontraron números válidos en el PDF según los criterios de filtrado.'
       };
     }
   } catch (error) {
