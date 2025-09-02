@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: true, 
-        message: 'Error interno del servidor' 
+        message: 'Error interno del servidor, por favor revise su conexión' 
       },
       { status: 500 }
     );

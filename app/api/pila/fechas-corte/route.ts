@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { 
         error: true, 
-        message: 'Error interno del servidor',
+        message: 'Error interno del servidor, por favor revise su conexión',
         details: error instanceof Error ? error.message : 'Error desconocido'
       },
       { status: 500 }

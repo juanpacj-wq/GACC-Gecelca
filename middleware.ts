@@ -139,7 +139,7 @@ export function middleware(request: NextRequest) {
         'http://localhost:3000', // Para desarrollo
       ].filter(Boolean)
       
-      // En producción, ser más estricto con los orígenes
+      // hay q ser más estricto con los orígenes
       if (!expectedOrigins.some(expected => origin === expected)) {
         console.warn(`CSRF protection: Invalid origin ${origin} for host ${host} on path ${path}`)
         

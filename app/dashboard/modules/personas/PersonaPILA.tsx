@@ -10,6 +10,7 @@ import { Loader2, Upload, FileText, AlertCircle, CheckCircle2, Calendar, Chevron
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { fetchFromApi } from "@/lib/api-tokens"
 import type { FechaCorte } from "@/types/pila"
+import { extractNumbersFromPdfFile } from "@/lib/pdf-extractor"
 
 interface PersonaPILAProps {
   idSolicitud: string;
@@ -31,7 +32,9 @@ export default function PersonaPILA({
 }: PersonaPILAProps) {
   // Estados para manejar el archivo y la carga
   const [archivo, setArchivo] = useState<File | null>(null);
+  const [infoPila, setInfoPila] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [extractingText, setExtractingText] = useState(false);
   const [mensaje, setMensaje] = useState<{tipo: 'success' | 'error' | 'info'; texto: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fechaSeleccionada, setFechaSeleccionada] = useState<number | null>(null);
@@ -221,15 +224,18 @@ export default function PersonaPILA({
   };
   
   // Manejar selección de archivo
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       
       if (fileExt === 'pdf') {
         setArchivo(file);
+        // Extraer información del PDF
+        await extractTextFromPdf(file);
       } else {
         setArchivo(null);
+        setInfoPila("");
         setMensaje({
           tipo: 'error',
           texto: 'Por favor seleccione un archivo PDF válido'
@@ -238,9 +244,46 @@ export default function PersonaPILA({
     }
   };
 
+  // Función para extraer texto del PDF
+  const extractTextFromPdf = async (file: File) => {
+    setExtractingText(true);
+    setMensaje({
+      tipo: 'info',
+      texto: 'Extrayendo información del PDF...'
+    });
+
+    try {
+      const result = await extractNumbersFromPdfFile(file);
+      
+      if (result.success) {
+        setInfoPila(result.text);
+        setMensaje({
+          tipo: 'success',
+          texto: 'Información extraída correctamente'
+        });
+      } else {
+        setInfoPila("");
+        setMensaje({
+          tipo: 'error',
+          texto: result.error || 'No se pudo extraer información del PDF'
+        });
+      }
+    } catch (error) {
+      console.error("Error al extraer texto del PDF:", error);
+      setInfoPila("");
+      setMensaje({
+        tipo: 'error',
+        texto: 'Error al procesar el PDF. Por favor, intente con otro archivo.'
+      });
+    } finally {
+      setExtractingText(false);
+    }
+  };
+
   // Función para eliminar el archivo seleccionado
   const handleEliminarArchivo = () => {
     setArchivo(null);
+    setInfoPila("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -307,6 +350,15 @@ export default function PersonaPILA({
       return;
     }
 
+    // Verificar si tenemos la información extraída del PDF
+    if (!infoPila) {
+      setMensaje({
+        tipo: 'error',
+        texto: 'No se pudo extraer información del PDF. Por favor, intente con otro archivo.'
+      });
+      return;
+    }
+
     setLoading(true);
     setMensaje(null);
 
@@ -325,9 +377,11 @@ export default function PersonaPILA({
       const formData = {
         id_solicitud: idSolicitud,
         id_persona: fechaCorte.fecha, // Usar la fecha como id_persona para identificar
+        id_vehiculo: "", // Campo vacío como se solicitó
         tipo_documento: "PILA",
         archivoNombre: archivo.name,
-        archivoBase64: base64String
+        archivoBase64: base64String,
+        info_pila: infoPila // Nuevo campo con la información extraída del PDF
       };
       
       // Enviar a la API para subir el documento
@@ -373,6 +427,7 @@ export default function PersonaPILA({
         
         // Resetear el formulario
         setArchivo(null);
+        setInfoPila("");
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -567,10 +622,10 @@ export default function PersonaPILA({
                     accept=".pdf" 
                     onChange={handleFileChange}
                     className={`w-full ${!fechasCargadas ? 'opacity-50 cursor-not-allowed' : 'opacity-0'} absolute inset-0 ${fechasCargadas ? 'cursor-pointer' : 'cursor-not-allowed'} z-10`}
-                    disabled={!fechasCargadas || loadingFechas}
+                    disabled={!fechasCargadas || loadingFechas || loading || extractingText}
                   />
-                  <div className={`w-full border rounded-md px-3 py-2 text-sm flex items-center ${!fechasCargadas || loadingFechas ? 'bg-gray-100' : ''}`}>
-                    <span className={`text-gray-500 truncate ${!fechasCargadas || loadingFechas ? 'opacity-50' : ''}`}>
+                  <div className={`w-full border rounded-md px-3 py-2 text-sm flex items-center ${!fechasCargadas || loadingFechas || loading || extractingText ? 'bg-gray-100' : ''}`}>
+                    <span className={`text-gray-500 truncate ${!fechasCargadas || loadingFechas || loading || extractingText ? 'opacity-50' : ''}`}>
                       {archivo ? truncateFileName(archivo.name, 30) : "Examinar..."}
                     </span>
                   </div>
@@ -598,10 +653,19 @@ export default function PersonaPILA({
                   size="sm"
                   onClick={handleEliminarArchivo}
                   className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  disabled={loading || extractingText}
                 >
                   <Trash2 className="h-4 w-4" />
                   <span className="sr-only">Eliminar archivo</span>
                 </Button>
+              </div>
+            )}
+
+            {/* Indicador de extracción en progreso */}
+            {extractingText && (
+              <div className="flex items-center justify-center p-3 bg-blue-50 rounded-md">
+                <Loader2 className="w-4 h-4 animate-spin text-blue-500 mr-2" />
+                <span className="text-sm text-blue-700">Extrayendo información del PDF...</span>
               </div>
             )}
           </div>
@@ -622,8 +686,7 @@ export default function PersonaPILA({
               <AlertCircle className="h-4 w-4 text-blue-600" />
             )}
             <AlertDescription className={`text-sm ${
-              mensaje.tipo === 'success' ? 'text-green-700' : 
-              mensaje.tipo === 'error' ? 'text-red-700' : 
+              mensaje.tipo === 'success' ? 'text-green-700' :mensaje.tipo === 'error' ? 'text-red-700' : 
               'text-blue-700'
             }`}>
               {mensaje.texto}
@@ -637,12 +700,13 @@ export default function PersonaPILA({
             variant="outline"
             onClick={onClose}
             className="h-9"
+            disabled={loading || extractingText}
           >
             Cancelar
           </Button>
           <Button 
             onClick={handleEnviarArchivo}
-            disabled={!archivo || fechaSeleccionada === null || loading || !fechasCargadas}
+            disabled={!archivo || fechaSeleccionada === null || loading || !infoPila || !fechasCargadas || extractingText}
             className={`${fechasCargadas ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400'} text-white h-9`}
           >
             {loading ? (

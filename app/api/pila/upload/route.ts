@@ -5,7 +5,15 @@ import { getServerApiCredentials } from '@/lib/api-tokens';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id_solicitud, id_persona, tipo_documento, archivoNombre, archivoBase64 } = body;
+    const { 
+      id_solicitud, 
+      id_persona, 
+      id_vehiculo, // Nuevo campo (estará vacío)
+      tipo_documento, 
+      archivoNombre, 
+      archivoBase64,
+      info_pila // Nuevo campo con la información extraída del PDF
+    } = body;
 
     // Validar campos requeridos
     if (!id_solicitud || !id_persona || !tipo_documento || !archivoNombre || !archivoBase64) {
@@ -19,6 +27,14 @@ export async function POST(request: NextRequest) {
     if (tipo_documento !== "PILA") {
       return NextResponse.json(
         { error: true, message: 'El tipo de documento debe ser PILA' },
+        { status: 400 }
+      );
+    }
+
+    // Validar que info_pila esté presente
+    if (!info_pila) {
+      return NextResponse.json(
+        { error: true, message: 'La información extraída del PDF es requerida' },
         { status: 400 }
       );
     }
@@ -38,9 +54,11 @@ export async function POST(request: NextRequest) {
     const requestBody = {
       id_solicitud,
       id_persona,
+      id_vehiculo: "", // Campo vacío como se solicitó
       tipo_documento,
       archivoNombre,
-      archivoBase64
+      archivoBase64,
+      info_pila // Incluir el nuevo campo en la petición
     };
 
     // Hacer la petición al servicio externo
@@ -53,7 +71,19 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      console.error('Error al parsear respuesta:', error);
+      return NextResponse.json(
+        { 
+          error: true, 
+          message: 'Error al procesar la respuesta del servicio' 
+        },
+        { status: 500 }
+      );
+    }
 
     // Si la respuesta no es exitosa, devolver el error
     if (!response.ok) {
@@ -71,6 +101,7 @@ export async function POST(request: NextRequest) {
       success: true,
       mensaje: 'Documento PILA cargado correctamente',
       fecha_corte: id_persona,
+      info_pila_length: info_pila.length, // Incluir longitud para referencia
       ...data
     });
 
@@ -79,7 +110,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: true, 
-        message: 'Error interno del servidor' 
+        message: 'Error interno del servidor, por favor revise su conexión' 
       },
       { status: 500 }
     );
