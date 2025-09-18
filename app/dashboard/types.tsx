@@ -46,6 +46,7 @@ export interface VehiculoRegistro {
   modelo: string;
   conductores: string;
   color?: string;
+  motivo_ingreso?: string;
 }
 
 // Datos que vienen de la API para vehículos
@@ -66,6 +67,7 @@ export interface VehiculoFormData {
   modelo: string;
   color: string;
   conductores: string;
+  motivo_ingreso: string;
 }
 
 // Interfaz para datos de documentos de personas

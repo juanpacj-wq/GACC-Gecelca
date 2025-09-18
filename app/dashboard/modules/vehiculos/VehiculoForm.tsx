@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Loader2, X } from "lucide-react"
-import { 
+import {
  AlertDialog,
  AlertDialogAction,
  AlertDialogCancel,
@@ -39,12 +39,12 @@ interface VehiculoFormProps {
  personas?: PersonaRegistro[]; // Añadimos esta prop para recibir las personas
 }
 
-export default function VehiculoForm({ 
+export default function VehiculoForm({
  idSolicitud,
  idVehiculo = "",
  vehiculoData = null,
  isEdit = false,
- onSuccess, 
+ onSuccess,
  onClose,
  onSetTab,
  onSetVehiculoId,
@@ -56,14 +56,15 @@ export default function VehiculoForm({
    marca: '',
    modelo: '',
    color: '',
-   conductores: ''
+   conductores: '',
+   motivo_ingreso: ''
  });
 
  // Estados para manejar el proceso
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState("");
  const [showConfirmation, setShowConfirmation] = useState(false);
- 
+
  // Estado para los conductores seleccionados
  const [selectedConductores, setSelectedConductores] = useState<string[]>([]);
 
@@ -75,14 +76,15 @@ export default function VehiculoForm({
        marca: vehiculoData.marca || '',
        modelo: vehiculoData.modelo || '',
        color: vehiculoData.color || '',
-       conductores: vehiculoData.conductores || ''
+       conductores: vehiculoData.conductores || '',
+       motivo_ingreso: vehiculoData.motivo_ingreso || ''
      });
      
      // Si hay conductores, los convertimos a array para el multiselect
      if (vehiculoData.conductores) {
        setSelectedConductores(vehiculoData.conductores.split(';').map(c => c.trim()));
      }
-     
+
      // Si tenemos un idVehiculo, lo usamos para establecer el ID
      if (idVehiculo && onSetVehiculoId) {
        onSetVehiculoId(idVehiculo);
@@ -156,7 +158,8 @@ export default function VehiculoForm({
      marca: formData.marca,
      modelo: formData.modelo,
      color: formData.color,
-     conductores: conductoresFormatted
+     conductores: conductoresFormatted,
+     motivo_ingreso: formData.motivo_ingreso
    };
 
    try {
@@ -179,7 +182,8 @@ export default function VehiculoForm({
          marca: '',
          modelo: '',
          color: '',
-         conductores: ''
+         conductores: '',
+         motivo_ingreso: ''
        });
        setSelectedConductores([]);
      }
@@ -259,8 +263,19 @@ export default function VehiculoForm({
            />
          </div>
        </div>
+       {/* Fila 3: Motivo Ingreso */}
+       <div>
+         <Label htmlFor="motivo_ingreso" className="text-xs">* MOTIVO DE INGRESO</Label>
+         <Input 
+           id="motivo_ingreso" 
+           placeholder="Ej. Transporte de personal" 
+           value={formData.motivo_ingreso}
+           onChange={(e) => handleVehiculoChange('motivo_ingreso', e.target.value)}
+           className="h-8 text-sm"
+         />
+       </div>
 
-       {/* Fila 3: Conductores (Nuevo componente multiselect) */}
+       {/* Fila 4: Conductores (Nuevo componente multiselect) */}
        <div>
          <Label htmlFor="conductores" className="text-xs">* CONDUCTORES (seleccionar de la lista)</Label>
          
@@ -348,7 +363,7 @@ export default function VehiculoForm({
        <Button 
          onClick={handleGuardarVehiculo}
          className="bg-green-600 hover:bg-green-700 text-white font-medium h-8 px-4 text-sm"
-         disabled={!formData.placa || !formData.marca || !formData.modelo || !formData.color || selectedConductores.length === 0}
+         disabled={!formData.placa || !formData.marca || !formData.modelo || !formData.color || !formData.motivo_ingreso || selectedConductores.length === 0}
        >
          {isEdit ? 'Actualizar y continuar' : 'Guardar y continuar'}
        </Button>

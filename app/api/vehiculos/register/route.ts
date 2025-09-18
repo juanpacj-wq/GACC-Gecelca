@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Validar campos requeridos
-    const requiredFields = ['id_solicitud', 'id_vehiculo', 'placa', 'marca', 'modelo', 'color'];
+    const requiredFields = ['id_solicitud', 'id_vehiculo', 'placa', 'marca', 'modelo', 'color', 'motivo_ingreso'];
     for (const field of requiredFields) {
       if (!body[field]) {
         return NextResponse.json(
