@@ -78,6 +78,12 @@ const API_ENDPOINTS: Record<string, ApiEndpoint> = {
     url: isServer ? (process.env.TERMINAR_SOLICITUD_URL || '') : '/api/solicitud/terminar',
     token: isServer ? (process.env.TERMINAR_SOLICITUD_TOKEN || '') : '',
   },
+
+  // Comentarios persona endpoints
+  COMENTARIOS_PERSONA: {
+    url: isServer ? (process.env.COMENTARIOS_PERSONA_URL || '') : '/api/personas/comentarios',
+    token: isServer ? (process.env.COMENTARIOS_PERSONA_TOKEN || '') : '',
+  },
 };
 
 /**
@@ -211,6 +217,10 @@ export const getServerApiCredentials = (key: string): ApiEndpoint => {
     TERMINAR_SOLICITUD: {
       url: process.env.TERMINAR_SOLICITUD_URL || '',
       token: process.env.TERMINAR_SOLICITUD_TOKEN || '',
+    },
+    COMENTARIOS_PERSONA: {
+        url: process.env.COMENTARIOS_PERSONA_URL || '',
+        token: process.env.COMENTARIOS_PERSONA_TOKEN || '',
     },
   };
   

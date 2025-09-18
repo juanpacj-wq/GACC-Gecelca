@@ -35,6 +35,8 @@ interface DashboardContextType {
   setIsCargaMasivaOpen: (open: boolean) => void
   isPILAOpen: boolean
   setIsPILAOpen: (open: boolean) => void
+  isNotificacionOpen: boolean;
+  setIsNotificacionOpen: (open: boolean) => void;
   showCargaMasivaSuccess: boolean
   setShowCargaMasivaSuccess: (show: boolean) => void
   showPILASuccess: boolean

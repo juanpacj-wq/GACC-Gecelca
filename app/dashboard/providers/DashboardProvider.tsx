@@ -41,6 +41,9 @@ export function DashboardProvider({ children, idSolicitud }: DashboardProviderPr
   // Estado para el popup de carga PILA (nuevo)
   const [isPILAOpen, setIsPILAOpen] = useState(false)
   
+  // Estado para el popup de notificación de cambios
+  const [isNotificacionOpen, setIsNotificacionOpen] = useState(false);
+
   // Estado para mostrar notificación después de carga masiva
   const [showCargaMasivaSuccess, setShowCargaMasivaSuccess] = useState(false)
   
@@ -260,6 +263,8 @@ export function DashboardProvider({ children, idSolicitud }: DashboardProviderPr
       setIsCargaMasivaOpen,
       isPILAOpen,
       setIsPILAOpen,
+      isNotificacionOpen,
+      setIsNotificacionOpen,
       showCargaMasivaSuccess,
       setShowCargaMasivaSuccess,
       showPILASuccess,

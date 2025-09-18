@@ -1,7 +1,7 @@
 // app/dashboard/modules/layout/Header.tsx
 "use client"
 
-import { Loader2, Users, Car } from "lucide-react"
+import { Loader2, Users, Car, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TipoIngreso } from "../../types"
 import { useState, useEffect } from "react"
@@ -11,6 +11,7 @@ interface HeaderProps {
   loading: boolean;
   onRefresh: () => void;
   onOpenDialog: () => void;
+  onOpenNotificacion: () => void; // Nueva prop
   idSolicitud?: string;
   solicitudData?: any; // Añadimos esta prop para recibir los datos de la solicitud
 }
@@ -20,6 +21,7 @@ export default function Header({
   loading, 
   onRefresh, 
   onOpenDialog,
+  onOpenNotificacion, // Recibir la nueva función
   idSolicitud,
   solicitudData
 }: HeaderProps) {
@@ -133,6 +135,19 @@ export default function Header({
                   "Actualizar tabla"
                 )}
               </Button>
+
+              {tipoIngreso === "persona" && (
+                <Button 
+                  onClick={onOpenNotificacion}
+                  variant="outline"
+                  disabled={loading}
+                  className="border-gray-300 h-8 px-3 text-xs"
+                  size="sm"
+                >
+                  <Bell className="w-3 h-3 mr-1.5" />
+                  Notificación de cambios
+                </Button>
+              )}
               
               <Button
                 onClick={onOpenDialog}

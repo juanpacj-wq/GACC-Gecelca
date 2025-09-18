@@ -35,7 +35,7 @@ interface VehiculoDocumentosProps {
 }
 
 // Definir documentos obligatorios para vehículo
-const DOCUMENTOS_OBLIGATORIOS = ["TARJETA DE PROPIEDAD"];
+const DOCUMENTOS_OBLIGATORIOS = ["LICENCIA DE TRÁNSITO"];
 
 // Interfaz para documentos existentes
 interface DocumentoExistente {

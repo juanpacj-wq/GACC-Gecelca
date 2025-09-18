@@ -37,6 +37,11 @@ export function useDashboardData() {
     context.setIsPILAOpen(true)
   }
 
+  // Manejador para abrir el diálogo de notificación de cambios
+  const handleOpenNotificacion = () => {
+    context.setIsNotificacionOpen(true);
+  };
+
   // Manejador para editar una persona
   const handleEditPersona = (persona: PersonaRegistro) => {
     context.setEditMode(true)
@@ -107,6 +112,7 @@ export function useDashboardData() {
     handleOpenDialog,
     handleOpenCargaMasiva,
     handleOpenPILA,
+    handleOpenNotificacion,
     handleEditPersona,
     handleEditVehiculo,
     handleCloseDialog,

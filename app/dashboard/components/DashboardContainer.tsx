@@ -14,11 +14,12 @@ import TerminarSolicitudDialog from "./TerminarSolicitudDialog"
 import CargaMasivaDialog from "./CargaMasivaDialog"
 import CargaPILADialog from "./CargaPILADialog"
 import AddEditDialog from "./AddEditDialog"
+import NotificacionDialog from "./NotificacionDialog" // Importar el nuevo diálogo
 
 export default function DashboardContainer() {
   const {
     tipoIngreso,
-    setTipoIngreso, // Añadido esta línea para corregir el error
+    setTipoIngreso,
     idSolicitud,
     personas,
     vehiculos,
@@ -40,6 +41,7 @@ export default function DashboardContainer() {
     handleEditVehiculo,
     handleOpenCargaMasiva,
     handleOpenPILA,
+    handleOpenNotificacion, // Importar la nueva función
     handleShowTerminarDialog
   } = useDashboardData()
 
@@ -66,6 +68,7 @@ export default function DashboardContainer() {
             loading={loading}
             onRefresh={handleRefresh}
             onOpenDialog={handleOpenDialog}
+            onOpenNotificacion={handleOpenNotificacion} // Pasar la nueva función
             idSolicitud={idSolicitud}
             solicitudData={solicitudData}
           />
@@ -185,6 +188,7 @@ export default function DashboardContainer() {
       <CargaMasivaDialog />
       <CargaPILADialog />
       <TerminarSolicitudDialog />
+      <NotificacionDialog /> {/* Renderizar el nuevo diálogo */}
     </div>
   )
 }
