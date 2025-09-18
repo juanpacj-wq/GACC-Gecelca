@@ -16,10 +16,10 @@ interface HeaderProps {
   solicitudData?: any; // Añadimos esta prop para recibir los datos de la solicitud
 }
 
-export default function Header({ 
-  tipoIngreso, 
-  loading, 
-  onRefresh, 
+export default function Header({
+  tipoIngreso,
+  loading,
+  onRefresh,
   onOpenDialog,
   onOpenNotificacion, // Recibir la nueva función
   idSolicitud,
@@ -32,12 +32,14 @@ export default function Header({
     epps: string;
     fechaInicio: string;
     fechaFin: string;
+    tipoEmpresa: string;
   }>({
     planta: "N/A",
     empresa: "N/A",
     epps: "N/A",
     fechaInicio: "",
-    fechaFin: ""
+    fechaFin: "",
+    tipoEmpresa: "N/A"
   });
 
   // Formatear fecha ISO a formato local
@@ -70,7 +72,8 @@ export default function Header({
         empresa: datos.Empresa || "N/A",
         epps: datos.epps_requeridos || "N/A",
         fechaInicio: formatearFecha(datos.Fechainicio),
-        fechaFin: formatearFecha(datos.Fechafin)
+        fechaFin: formatearFecha(datos.Fechafin),
+        tipoEmpresa: datos.Editor?.JobTitle || "visitantes"
       });
     }
   }, [solicitudData]);
@@ -102,7 +105,7 @@ export default function Header({
         
         <div className="flex-1 text-sm text-gray-700 leading-relaxed">
           <div className="max-w-[580px]">
-            Usted está realizando una solicitud de ingreso a planta <span className="font-semibold text-blue-600">{infoSolicitud.planta}</span> para visitantes de la empresa <span className="font-semibold text-blue-600">{infoSolicitud.empresa}</span>. Los EPPS necesarios para la labor son: <span className="font-semibold text-blue-600">{infoSolicitud.epps}</span>, y serán suministrados por la empresa visitante.
+            Usted está realizando una solicitud de ingreso a planta <span className="font-semibold text-blue-600">{infoSolicitud.planta}</span> para {infoSolicitud.tipoEmpresa}s de la empresa <span className="font-semibold text-blue-600">{infoSolicitud.empresa}</span>. Los EPPS necesarios para la labor son: <span className="font-semibold text-blue-600">{infoSolicitud.epps}</span>, y serán suministrados por la empresa  <span className="font-semibold text-blue-600">{infoSolicitud.tipoEmpresa}</span>.
             <div className="mt-2 flex gap-6">
               <div>
                 <span className="font-semibold">Inicio del Ingreso:</span> {infoSolicitud.fechaInicio}

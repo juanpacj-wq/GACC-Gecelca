@@ -32,10 +32,11 @@ interface PersonaDocumentosProps {
   idPersona: string;
   onClose: () => void;
   isEdit?: boolean; // Nueva prop para saber si estamos en modo edición
+  solicitudData?: any;
 }
 
 // Definir documentos obligatorios
-const DOCUMENTOS_OBLIGATORIOS = ["ARL", "EPS", "AFP", "Documento de identidad"];
+const DOCUMENTOS_OBLIGATORIOS_BASE = ["ARL", "EPS", "AFP", "Documento de identidad"];
 
 // Interfaz para documentos existentes
 interface DocumentoExistente {
@@ -48,7 +49,8 @@ export default function PersonaDocumentos({
   idSolicitud, 
   idPersona,
   onClose,
-  isEdit = false
+  isEdit = false,
+  solicitudData
 }: PersonaDocumentosProps) {
   // Estado para el formulario de documentos
   const [tipoDocumento, setTipoDocumento] = useState<string>("");
@@ -66,7 +68,19 @@ export default function PersonaDocumentos({
   const [loadingDocumentos, setLoadingDocumentos] = useState(false);
   
   // Estado para tracking de documentos obligatorios
-  const [documentosObligatoriosFaltantes, setDocumentosObligatoriosFaltantes] = useState<string[]>([...DOCUMENTOS_OBLIGATORIOS]);
+  const [documentosObligatorios, setDocumentosObligatorios] = useState<string[]>([...DOCUMENTOS_OBLIGATORIOS_BASE]);
+  const [documentosObligatoriosFaltantes, setDocumentosObligatoriosFaltantes] = useState<string[]>([...DOCUMENTOS_OBLIGATORIOS_BASE]);
+
+  // Determinar los documentos obligatorios en función del tipo de empresa
+  useEffect(() => {
+    if (solicitudData && solicitudData.Datos && solicitudData.Datos.length > 0) {
+      const tipoEmpresa = solicitudData.Datos[0].Editor?.JobTitle;
+      if (tipoEmpresa && tipoEmpresa.toLowerCase() === 'visitante') {
+        setDocumentosObligatorios([...DOCUMENTOS_OBLIGATORIOS_BASE, "SOPORTE DE PAGO DE SEGURIDAD SOCIAL"]);
+        setDocumentosObligatoriosFaltantes([...DOCUMENTOS_OBLIGATORIOS_BASE, "SOPORTE DE PAGO DE SEGURIDAD SOCIAL"]);
+      }
+    }
+  }, [solicitudData]);
 
   // Cargar documentos existentes cuando estamos en modo edición
   useEffect(() => {
@@ -81,9 +95,9 @@ export default function PersonaDocumentos({
     const tiposExistentes = documentosExistentes.map(doc => doc.tipo_adjunto);
     const todosTipos = Array.from(new Set([...tiposSubidos, ...tiposExistentes]));
     
-    const faltantes = DOCUMENTOS_OBLIGATORIOS.filter(doc => !todosTipos.includes(doc));
+    const faltantes = documentosObligatorios.filter(doc => !todosTipos.includes(doc));
     setDocumentosObligatoriosFaltantes(faltantes);
-  }, [documentosSubidos, documentosExistentes]);
+  }, [documentosSubidos, documentosExistentes, documentosObligatorios]);
 
   // Función para cargar documentos existentes
   const cargarDocumentosExistentes = async () => {
@@ -310,7 +324,7 @@ export default function PersonaDocumentos({
         <div className="bg-gray-50 p-2 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium mb-2">Documentos obligatorios:</h3>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-            {DOCUMENTOS_OBLIGATORIOS.map((doc) => {
+            {documentosObligatorios.map((doc) => {
               const isUploaded = !documentosObligatoriosFaltantes.includes(doc);
               return (
                 <div key={doc} className="flex items-center">
@@ -386,7 +400,7 @@ export default function PersonaDocumentos({
                 <SelectValue placeholder="Seleccione tipo de documento" />
               </SelectTrigger>
               <SelectContent>
-                {DOCUMENTOS_OBLIGATORIOS.map((doc) => (
+                {documentosObligatorios.map((doc) => (
                   <SelectItem 
                     key={doc} 
                     value={doc} 
@@ -399,6 +413,7 @@ export default function PersonaDocumentos({
                 <SelectItem value="Cert. Trabajo en Alturas">Cert. Trabajo en Alturas</SelectItem>
                 <SelectItem value="Concepto médico">Concepto médico</SelectItem>
                 <SelectItem value="Licencia de conducción">Licencia de conducción</SelectItem>
+                <SelectItem value="SOPORTE DE PAGO DE SEGURIDAD SOCIAL">SOPORTE DE PAGO DE SEGURIDAD SOCIAL</SelectItem>
               </SelectContent>
             </Select>
           </div>

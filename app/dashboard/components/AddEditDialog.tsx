@@ -26,6 +26,7 @@ export default function AddEditDialog() {
     currentPersona,
     currentVehiculo,
     personas,
+    solicitudData,
     fetchPersonas,
     fetchVehiculos,
     handleCloseDialog
@@ -125,6 +126,7 @@ export default function AddEditDialog() {
                   idPersona={idPersona}
                   onClose={() => setIsDialogOpen(false)}
                   isEdit={editMode} // Pasar el modo de edición
+                  solicitudData={solicitudData}
                 />
               ) : (
                 <div className="text-center py-8">
