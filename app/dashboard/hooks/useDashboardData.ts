@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useDashboard } from "../contexts/DashboardContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { PersonaRegistro, VehiculoRegistro } from "../types"
+import { fetchFromApi } from "@/lib/api-tokens"
 
 export function useDashboardData() {
   const router = useRouter()
@@ -43,29 +44,65 @@ export function useDashboardData() {
   };
 
   // Manejador para editar una persona
-  const handleEditPersona = (persona: PersonaRegistro) => {
-    context.setEditMode(true)
-    context.setCurrentPersona(persona)
-    // Usar el id_persona si está disponible, o guid0, o Title como fallback
-    if (persona.id_persona) {
-      context.setIdPersona(persona.id_persona)
-    } else if (persona.Title) {
-      context.setIdPersona(persona.Title)
+  const handleEditPersona = async (persona: PersonaRegistro) => {
+    context.setEditMode(true);
+    context.setActiveTab("general");
+    context.setIsDialogOpen(true);
+    context.setLoading(true);
+
+    try {
+      const personaId = persona.id_persona || persona.guid0 || persona.Title;
+      if (personaId) {
+        const fullPersonaData = await fetchFromApi<PersonaRegistro>('PERSONAS', {
+          id_solicitud: context.idSolicitud,
+          id_persona: personaId
+        });
+        context.setCurrentPersona(fullPersonaData);
+        context.setIdPersona(personaId);
+      } else {
+        throw new Error("No se pudo encontrar un ID único para la persona.");
+      }
+    } catch (error) {
+      console.error("Error fetching full persona data:", error);
+      // Fallback to the partial data from the table if the fetch fails
+      context.setCurrentPersona(persona);
+      const personaId = persona.id_persona || persona.guid0 || persona.Title;
+      if (personaId) {
+        context.setIdPersona(personaId);
+      }
+    } finally {
+      context.setLoading(false);
     }
-    context.setActiveTab("general")
-    context.setIsDialogOpen(true)
-  }
+  };
 
   // Manejador para editar un vehículo
-  const handleEditVehiculo = (vehiculo: VehiculoRegistro) => {
-    context.setEditMode(true)
-    context.setCurrentVehiculo(vehiculo)
-    if (vehiculo.id_vehiculo) {
-      context.setIdVehiculo(vehiculo.id_vehiculo)
+  const handleEditVehiculo = async (vehiculo: VehiculoRegistro) => {
+    context.setEditMode(true);
+    context.setActiveTab("general");
+    context.setIsDialogOpen(true);
+    context.setLoading(true);
+    try {
+      if (vehiculo.id_vehiculo) {
+        const fullVehiculoData = await fetchFromApi<VehiculoRegistro>('VEHICULOS', {
+          id_solicitud: context.idSolicitud,
+          id_vehiculo: vehiculo.id_vehiculo
+        });
+        context.setCurrentVehiculo(fullVehiculoData);
+        context.setIdVehiculo(vehiculo.id_vehiculo);
+      } else {
+        throw new Error("No se pudo encontrar un ID único para el vehículo.");
+      }
+    } catch (error) {
+      console.error("Error fetching full vehiculo data:", error);
+      context.setCurrentVehiculo(vehiculo);
+      if(vehiculo.id_vehiculo) {
+        context.setIdVehiculo(vehiculo.id_vehiculo)
+      }
+    } finally {
+      context.setLoading(false);
     }
-    context.setActiveTab("general")
-    context.setIsDialogOpen(true)
-  }
+  };
+
 
   // Función para limpiar el formulario después de cerrar el diálogo
   const handleCloseDialog = () => {

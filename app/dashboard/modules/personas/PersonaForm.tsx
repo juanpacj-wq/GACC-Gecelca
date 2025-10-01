@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Loader2, Calendar, XCircle, CheckCircle } from "lucide-react"
-import { 
+import {
  AlertDialog,
  AlertDialogAction,
  AlertDialogCancel,
@@ -83,28 +83,26 @@ export default function PersonaForm({
  // Cargar datos si estamos en modo edición
  useEffect(() => {
    if (isEdit && personaData) {
-     // Determinar si los valores son "NA" para los campos de fecha
-     const certConfNA = personaData.certificadoConfinados === "NA";
-     const certAltNA = personaData.certificadoAltura === "NA";
-     const concAltNA = personaData.conceptoAltura === "NA";
-     const concIngNA = personaData.conceptoIngreso === "NA";
+     const certConfNA = personaData.CERTIFICADOESPACIOSCONFINADO === "NA";
+     const certAltNA = personaData.CERTIFICADO_TRABAJO_EN_ALTURA === "NA";
+     const concAltNA = personaData.CONCEPTO_MEDICO_PARA_TRABAJO_EN_ === "NA";
+     const concIngNA = personaData.CONCEPTO_APTITUD_MEDICO_INGRESO_ === "NA";
      
      setFormData({
        nombre: personaData.Nombre || '',
        apellidos: personaData.Apellidos || '',
        cedula: personaData.C_x002e_C || '',
-       correo: personaData.correo || '', 
+       correo: personaData.Correo || '',
        cargo: personaData.Cargo || '',
-       arl: personaData.arl || '', 
-       eps: personaData.eps || '', 
-       afp: personaData.afp || '',
-       certificadoConfinados: certConfNA ? '' : (personaData.certificadoConfinados || ''),
-       certificadoAltura: certAltNA ? '' : (personaData.certificadoAltura || ''),
-       conceptoAltura: concAltNA ? '' : (personaData.conceptoAltura || ''),
-       conceptoIngreso: concIngNA ? '' : (personaData.conceptoIngreso || '')
+       arl: personaData.ARL || '',
+       eps: personaData.EPS || '',
+       afp: personaData.AFP || '',
+       certificadoConfinados: certConfNA ? '' : (personaData.CERTIFICADOESPACIOSCONFINADO || ''),
+       certificadoAltura: certAltNA ? '' : (personaData.CERTIFICADO_TRABAJO_EN_ALTURA || ''),
+       conceptoAltura: concAltNA ? '' : (personaData.CONCEPTO_MEDICO_PARA_TRABAJO_EN_ || ''),
+       conceptoIngreso: concIngNA ? '' : (personaData.CONCEPTO_APTITUD_MEDICO_INGRESO_ || '')
      });
      
-     // Configurar los estados de NA
      setUsarNA({
        certificadoConfinados: certConfNA,
        certificadoAltura: certAltNA,
@@ -112,7 +110,6 @@ export default function PersonaForm({
        conceptoIngreso: concIngNA
      });
      
-     // Si tenemos un idPersona, lo usamos para establecer el ID
      if (idPersona) {
        onSetPersonaId(idPersona);
      } else if (personaData.id_persona) {

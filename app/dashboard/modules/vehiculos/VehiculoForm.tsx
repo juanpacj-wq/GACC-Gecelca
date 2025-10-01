@@ -72,20 +72,18 @@ export default function VehiculoForm({
  useEffect(() => {
    if (isEdit && vehiculoData) {
      setFormData({
-       placa: vehiculoData.placa || '',
-       marca: vehiculoData.marca || '',
-       modelo: vehiculoData.modelo || '',
-       color: vehiculoData.color || '',
-       conductores: vehiculoData.conductores || '',
+       placa: vehiculoData.PLACA || '',
+       marca: vehiculoData.MARCA || '',
+       modelo: vehiculoData.MODELO || '',
+       color: vehiculoData.COLOR || '',
+       conductores: vehiculoData.CONDUCTORES || '',
        motivo_ingreso: vehiculoData.motivo_ingreso || ''
      });
      
-     // Si hay conductores, los convertimos a array para el multiselect
-     if (vehiculoData.conductores) {
-       setSelectedConductores(vehiculoData.conductores.split(';').map(c => c.trim()));
+     if (vehiculoData.CONDUCTORES) {
+       setSelectedConductores(vehiculoData.CONDUCTORES.split(';').map(c => c.trim()));
      }
 
-     // Si tenemos un idVehiculo, lo usamos para establecer el ID
      if (idVehiculo && onSetVehiculoId) {
        onSetVehiculoId(idVehiculo);
      }

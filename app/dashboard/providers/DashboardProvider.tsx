@@ -241,6 +241,7 @@ export function DashboardProvider({ children, idSolicitud }: DashboardProviderPr
       idVehiculo,
       setIdVehiculo,
       loading,
+      setLoading,
       error,
       isDialogOpen,
       setIsDialogOpen,

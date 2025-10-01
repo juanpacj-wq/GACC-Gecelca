@@ -505,7 +505,7 @@ export default function PersonaPILA({
         {/* Interfaz de dos columnas */}
         <div className="grid grid-cols-12 gap-4">
           {/* Columna izquierda - Selector de fechas predefinidas */}
-          <div className="col-span-5 border rounded-md p-2 h-fit bg-gray-50">
+          <div className="col-span-5  border max-h-[220px] rounded-md p-2 h-fit bg-gray-50 overflow-y-auto">
             <h3 className="font-medium mb-2 text-sm flex items-center">
               <Calendar className="w-4 h-4 mr-1" />
               Fecha de corte

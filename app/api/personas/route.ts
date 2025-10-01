@@ -5,7 +5,7 @@ import { getServerApiCredentials } from '@/lib/api-tokens';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id_solicitud } = body;
+    const { id_solicitud, id_persona } = body;
 
     if (!id_solicitud) {
       return NextResponse.json(
@@ -46,6 +46,19 @@ export async function POST(request: NextRequest) {
         { status: response.status }
       );
     }
+    
+    // Si se provee un id_persona, filtrar y devolver solo esa persona
+    if (id_persona && Array.isArray(data)) {
+        const persona = data.find(p => p.id_persona === id_persona || p.guid0 === id_persona || p.Title === id_persona);
+        if (persona) {
+            return NextResponse.json(persona);
+        } else {
+            // Si no se encuentra la persona específica, puedes devolver un 404 o un array vacío.
+            // En este caso, devolver un error parece más apropiado.
+            return NextResponse.json({ error: true, message: 'Persona no encontrada' }, { status: 404 });
+        }
+    }
+
 
     return NextResponse.json(data);
 

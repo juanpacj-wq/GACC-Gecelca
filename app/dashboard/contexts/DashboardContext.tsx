@@ -13,6 +13,7 @@ interface DashboardContextType {
   idVehiculo: string
   setIdVehiculo: (id: string) => void
   loading: boolean
+  setLoading: (loading: boolean) => void
   error: string
   isDialogOpen: boolean
   setIsDialogOpen: (open: boolean) => void

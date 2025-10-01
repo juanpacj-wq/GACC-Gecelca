@@ -11,14 +11,14 @@ export interface PersonaRegistro {
   empresa: string;
   Estado?: string;
   ESTADO_ACTIVIDAD?: string;
-  correo?: string;
-  arl?: string;
-  eps?: string;
-  afp?: string;
-  certificadoConfinados?: string;
-  certificadoAltura?: string;
-  conceptoAltura?: string;
-  conceptoIngreso?: string;
+  Correo?: string;
+  ARL?: string;
+  EPS?: string;
+  AFP?: string;
+  CERTIFICADOESPACIOSCONFINADO?: string;
+  CERTIFICADO_TRABAJO_EN_ALTURA?: string;
+  CONCEPTO_MEDICO_PARA_TRABAJO_EN_?: string;
+  CONCEPTO_APTITUD_MEDICO_INGRESO_?: string;
   guid0?: string;
 }
 
@@ -47,6 +47,11 @@ export interface VehiculoRegistro {
   conductores: string;
   color?: string;
   motivo_ingreso?: string;
+  PLACA?: string;
+  MARCA?: string;
+  MODELO?: string;
+  COLOR?: string;
+  CONDUCTORES?: string;
 }
 
 // Datos que vienen de la API para vehículos
