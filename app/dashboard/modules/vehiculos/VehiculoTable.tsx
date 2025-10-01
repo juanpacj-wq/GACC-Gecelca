@@ -93,7 +93,7 @@ export default function VehiculoTable({
  const vehiculosVisibles = vehiculosFiltrados.slice(0, 5);
 
  return (
-   <div className="bg-white rounded-lg shadow-sm max-h-[45vh] overflow-hidden">
+   <div className="bg-white rounded-lg shadow-sm max-h-[42.5vh] overflow-hidden">
      <div className="h-full flex flex-col">
        <div className="overflow-x-auto">
          <table className="min-w-full text-sm">

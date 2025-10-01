@@ -97,7 +97,7 @@ export default function PersonaTable({
  }
 
  return (
-   <div className="bg-white rounded-lg shadow-sm max-h-[45vh] overflow-auto">
+   <div className="bg-white rounded-lg shadow-sm max-h-[42.5vh] overflow-auto">
      <div className="h-full flex flex-col">
        <div className="overflow-x-auto">
          <table className="min-w-full text-sm">

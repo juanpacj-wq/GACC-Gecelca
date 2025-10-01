@@ -23,8 +23,8 @@ export default function Filters({
 }: FiltersProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-2 mb-2">
-      <div className="flex gap-3 items-end">
-        <div className="flex-1">
+      <div className="flex gap-3 -mt-2 items-end">
+        <div className="flex-1 ">
           <Label htmlFor="buscar" className="text-xs mb-0.5">
             {tipoIngreso === "persona" 
               ? "Buscar por nombre o apellido" 
