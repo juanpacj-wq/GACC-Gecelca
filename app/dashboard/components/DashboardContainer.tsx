@@ -60,8 +60,8 @@ export default function DashboardContainer() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 bg-gray-50 p-4 overflow-hidden -mt-1">
-        <div className="max-w-7xl mx-auto mt-0">
+      <main className="flex-1 bg-gray-50 p-4 overflow-auto -mt-1 min-w-0">
+        <div className="w-full mt-0">
           {/* Encabezado */}
           <Header 
             tipoIngreso={tipoIngreso}
@@ -121,7 +121,7 @@ export default function DashboardContainer() {
           )}
 
           {/* Contenedor con altura fija para la tabla */}
-          <div className="max-h-[calc(100vh-330px)] overflow-hidden">
+          <div className="max-h-[calc(100vh-330px)] overflow-auto">
             {/* Tabla correspondiente según el tipo de ingreso */}
             {tipoIngreso === "persona" ? (
               <PersonaTable 
@@ -150,7 +150,8 @@ export default function DashboardContainer() {
                   {/* Botón de carga masiva */}
                   <button
                     onClick={handleOpenCargaMasiva}
-                    className="h-6 px-2 text-xs flex items-center gap-1 border border-blue-300 rounded-md text-blue-700 hover:bg-blue-50"
+                    disabled={isSolicitudTerminada}
+                    className="h-6 px-2 text-xs flex items-center gap-1 border border-blue-300 rounded-md text-blue-700 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <FileSpreadsheet className="w-3 h-3" />
                     Carga masiva
