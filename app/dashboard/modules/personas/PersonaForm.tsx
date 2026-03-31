@@ -63,7 +63,11 @@ export default function PersonaForm({
    certificadoConfinados: '',
    certificadoAltura: '',
    conceptoAltura: '',
-   conceptoIngreso: ''
+   conceptoIngreso: '',
+   lugarNacimiento: '',
+   lugarResidencia: '',
+   genero: '',
+   fechaNacimiento: ''
  });
 
  // Estado para opciones de NA en campos de fecha
@@ -97,10 +101,14 @@ export default function PersonaForm({
        arl: personaData.ARL || '',
        eps: personaData.EPS || '',
        afp: personaData.AFP || '',
-       certificadoConfinados: certConfNA ? '' : (personaData.CERTIFICADOESPACIOSCONFINADO || ''),
-       certificadoAltura: certAltNA ? '' : (personaData.CERTIFICADO_TRABAJO_EN_ALTURA || ''),
-       conceptoAltura: concAltNA ? '' : (personaData.CONCEPTO_MEDICO_PARA_TRABAJO_EN_ || ''),
-       conceptoIngreso: concIngNA ? '' : (personaData.CONCEPTO_APTITUD_MEDICO_INGRESO_ || '')
+       certificadoConfinados: certConfNA ? '' : formatDateForInput(personaData.CERTIFICADOESPACIOSCONFINADO),
+       certificadoAltura: certAltNA ? '' : formatDateForInput(personaData.CERTIFICADO_TRABAJO_EN_ALTURA),
+       conceptoAltura: concAltNA ? '' : formatDateForInput(personaData.CONCEPTO_MEDICO_PARA_TRABAJO_EN_),
+       conceptoIngreso: concIngNA ? '' : formatDateForInput(personaData.CONCEPTO_APTITUD_MEDICO_INGRESO_),
+       lugarNacimiento: personaData.LugarNacimiento || '',
+       lugarResidencia: personaData.LugarResidencia || '',
+       genero: personaData.Genero || '',
+       fechaNacimiento: formatDateForInput(personaData.FechaNacimiento)
      });
      
      setUsarNA({
@@ -119,6 +127,16 @@ export default function PersonaForm({
      }
    }
  }, [isEdit, personaData, idPersona, onSetPersonaId]);
+
+ // Normaliza fechas al formato YYYY-MM-DD requerido por input[type="date"]
+ const formatDateForInput = (dateStr: string | undefined): string => {
+   if (!dateStr || dateStr === 'NA') return '';
+   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+   if (dateStr.includes('T')) return dateStr.split('T')[0];
+   const ddmmyyyy = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dateStr);
+   if (ddmmyyyy) return `${ddmmyyyy[3]}-${ddmmyyyy[2]}-${ddmmyyyy[1]}`;
+   return dateStr;
+ };
 
  // Manejador de cambios en el formulario
  const handlePersonaChange = (field: string, value: string) => {
@@ -179,7 +197,11 @@ export default function PersonaForm({
    if (!formData.arl.trim()) newErrors.arl = "La ARL es obligatoria";
    if (!formData.eps.trim()) newErrors.eps = "La EPS es obligatoria";
    if (!formData.afp.trim()) newErrors.afp = "La AFP es obligatoria";
-   
+   if (!formData.lugarNacimiento.trim()) newErrors.lugarNacimiento = "El lugar de nacimiento es obligatorio";
+   if (!formData.lugarResidencia.trim()) newErrors.lugarResidencia = "El lugar de residencia es obligatorio";
+   if (!formData.genero) newErrors.genero = "El género es obligatorio";
+   if (!formData.fechaNacimiento) newErrors.fechaNacimiento = "La fecha de nacimiento es obligatoria";
+
    // Validar campos de fecha o NA
    if (!usarNA.certificadoConfinados && !formData.certificadoConfinados) {
      newErrors.certificadoConfinados = "Seleccione una fecha o marque NA";
@@ -247,7 +269,11 @@ export default function PersonaForm({
      cert_espacios_conf: usarNA.certificadoConfinados ? "NA" : formData.certificadoConfinados,
      cert_trab_alt: usarNA.certificadoAltura ? "NA" : formData.certificadoAltura,
      conc_med_trab_alt: usarNA.conceptoAltura ? "NA" : formData.conceptoAltura,
-     conc_med_ingreso: usarNA.conceptoIngreso ? "NA" : formData.conceptoIngreso
+     conc_med_ingreso: usarNA.conceptoIngreso ? "NA" : formData.conceptoIngreso,
+     lugar_nacimiento: formData.lugarNacimiento,
+     lugar_residencia: formData.lugarResidencia,
+     genero: formData.genero,
+     fecha_nacimiento: formData.fechaNacimiento
    };
 
    try {
@@ -276,7 +302,11 @@ export default function PersonaForm({
          certificadoConfinados: '',
          certificadoAltura: '',
          conceptoAltura: '',
-         conceptoIngreso: ''
+         conceptoIngreso: '',
+         lugarNacimiento: '',
+         lugarResidencia: '',
+         genero: '',
+         fechaNacimiento: ''
        });
        
        setUsarNA({
@@ -413,7 +443,61 @@ export default function PersonaForm({
          </div>
        </div>
 
-       {/* Fila 4: Certificados con opción NA */}
+       {/* Fila 4: Lugar de nacimiento, Lugar de residencia, Género, Fecha de nacimiento */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="lugar-nacimiento" className="text-xs">* Lugar de nacimiento</Label>
+          <Input
+            id="lugar-nacimiento"
+            placeholder="Ej. Bogotá"
+            value={formData.lugarNacimiento}
+            onChange={(e) => handlePersonaChange('lugarNacimiento', e.target.value)}
+            className={`h-8 text-sm ${formErrors.lugarNacimiento ? 'border-red-500' : ''}`}
+          />
+          {formErrors.lugarNacimiento && <p className="text-xs text-red-500 mt-1">{formErrors.lugarNacimiento}</p>}
+        </div>
+        <div>
+          <Label htmlFor="lugar-residencia" className="text-xs">* Lugar de residencia</Label>
+          <Input
+            id="lugar-residencia"
+            placeholder="Ej. Medellín"
+            value={formData.lugarResidencia}
+            onChange={(e) => handlePersonaChange('lugarResidencia', e.target.value)}
+            className={`h-8 text-sm ${formErrors.lugarResidencia ? 'border-red-500' : ''}`}
+          />
+          {formErrors.lugarResidencia && <p className="text-xs text-red-500 mt-1">{formErrors.lugarResidencia}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="genero" className="text-xs">* Género</Label>
+          <Select value={formData.genero} onValueChange={(value) => handlePersonaChange('genero', value)}>
+            <SelectTrigger id="genero" className={`h-8 text-sm ${formErrors.genero ? 'border-red-500' : ''}`}>
+              <SelectValue placeholder="Seleccione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="MASCULINO">Masculino</SelectItem>
+              <SelectItem value="FEMENINO">Femenino</SelectItem>
+              <SelectItem value="OTRO">Otro</SelectItem>
+            </SelectContent>
+          </Select>
+          {formErrors.genero && <p className="text-xs text-red-500 mt-1">{formErrors.genero}</p>}
+        </div>
+        <div>
+          <Label htmlFor="fecha-nacimiento" className="text-xs">* Fecha de nacimiento</Label>
+          <Input
+            id="fecha-nacimiento"
+            type="date"
+            value={formData.fechaNacimiento}
+            onChange={(e) => handlePersonaChange('fechaNacimiento', e.target.value)}
+            className={`h-8 text-sm w-full ${formErrors.fechaNacimiento ? 'border-red-500' : ''}`}
+          />
+          {formErrors.fechaNacimiento && <p className="text-xs text-red-500 mt-1">{formErrors.fechaNacimiento}</p>}
+        </div>
+      </div>
+
+      {/* Fila 5: Certificados con opción NA */}
        <div className="grid grid-cols-2 gap-3">
          <div>
            <div className="flex justify-between items-center">
@@ -438,7 +522,7 @@ export default function PersonaForm({
                type="date"
                value={formData.certificadoConfinados}
                onChange={(e) => handlePersonaChange('certificadoConfinados', e.target.value)}
-               className={`h-8 text-sm ${formErrors.certificadoConfinados ? 'border-red-500' : ''}`}
+               className={`h-8 text-sm w-full ${formErrors.certificadoConfinados ? 'border-red-500' : ''}`}
                disabled={usarNA.certificadoConfinados}
              />
            </div>
@@ -467,7 +551,7 @@ export default function PersonaForm({
                type="date"
                value={formData.certificadoAltura}
                onChange={(e) => handlePersonaChange('certificadoAltura', e.target.value)}
-               className={`h-8 text-sm ${formErrors.certificadoAltura ? 'border-red-500' : ''}`}
+               className={`h-8 text-sm w-full ${formErrors.certificadoAltura ? 'border-red-500' : ''}`}
                disabled={usarNA.certificadoAltura}
              />
            </div>
@@ -500,7 +584,7 @@ export default function PersonaForm({
                type="date"
                value={formData.conceptoAltura}
                onChange={(e) => handlePersonaChange('conceptoAltura', e.target.value)}
-               className={`h-8 text-sm ${formErrors.conceptoAltura ? 'border-red-500' : ''}`}
+               className={`h-8 text-sm w-full ${formErrors.conceptoAltura ? 'border-red-500' : ''}`}
                disabled={usarNA.conceptoAltura}
              />
            </div>
@@ -529,7 +613,7 @@ export default function PersonaForm({
                type="date"
                value={formData.conceptoIngreso}
                onChange={(e) => handlePersonaChange('conceptoIngreso', e.target.value)}
-               className={`h-8 text-sm ${formErrors.conceptoIngreso ? 'border-red-500' : ''}`}
+               className={`h-8 text-sm w-full ${formErrors.conceptoIngreso ? 'border-red-500' : ''}`}
                disabled={usarNA.conceptoIngreso}
              />
            </div>

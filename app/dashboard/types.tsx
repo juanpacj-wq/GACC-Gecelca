@@ -19,6 +19,10 @@ export interface PersonaRegistro {
   CERTIFICADO_TRABAJO_EN_ALTURA?: string;
   CONCEPTO_MEDICO_PARA_TRABAJO_EN_?: string;
   CONCEPTO_APTITUD_MEDICO_INGRESO_?: string;
+  LugarNacimiento?: string;
+  LugarResidencia?: string;
+  Genero?: string;
+  FechaNacimiento?: string;
   guid0?: string;
 }
 
@@ -36,6 +40,10 @@ export interface PersonaFormData {
   certificadoAltura: string;
   conceptoAltura: string;
   conceptoIngreso: string;
+  lugarNacimiento: string;
+  lugarResidencia: string;
+  genero: string;
+  fechaNacimiento: string;
 }
 
 // Interfaces para los vehículos
