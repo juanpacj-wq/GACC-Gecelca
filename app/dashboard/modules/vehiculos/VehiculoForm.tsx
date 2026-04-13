@@ -71,17 +71,24 @@ export default function VehiculoForm({
  // Cargar datos si estamos en modo edición
  useEffect(() => {
    if (isEdit && vehiculoData) {
+     const placa = vehiculoData.PLACA || vehiculoData.placa || '';
+     const marca = vehiculoData.MARCA || vehiculoData.marca || '';
+     const modelo = vehiculoData.MODELO || vehiculoData.modelo || '';
+     const color = vehiculoData.COLOR || vehiculoData.color || '';
+     const conductores = vehiculoData.CONDUCTORES || vehiculoData.conductores || '';
+     const motivo = vehiculoData.motivo_ingreso || '';
+
      setFormData({
-       placa: vehiculoData.PLACA || '',
-       marca: vehiculoData.MARCA || '',
-       modelo: vehiculoData.MODELO || '',
-       color: vehiculoData.COLOR || '',
-       conductores: vehiculoData.CONDUCTORES || '',
-       motivo_ingreso: vehiculoData.motivo_ingreso || ''
+       placa,
+       marca,
+       modelo,
+       color,
+       conductores,
+       motivo_ingreso: motivo
      });
-     
-     if (vehiculoData.CONDUCTORES) {
-       setSelectedConductores(vehiculoData.CONDUCTORES.split(';').map(c => c.trim()));
+
+     if (conductores) {
+       setSelectedConductores(conductores.split(';').map(c => c.trim()));
      }
 
      if (idVehiculo && onSetVehiculoId) {

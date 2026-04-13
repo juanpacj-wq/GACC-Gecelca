@@ -90,7 +90,7 @@ export function ConductoresInfo({ conductores }: { conductores: string }) {
           <p className="text-sm font-medium mb-1">Conductores asignados:</p>
           <ul className="text-xs space-y-1">
             {conductores.split(';').map((conductor, idx) => (
-              <li key={idx} className="text-gray-600">• {conductor.trim()}</li>
+              <li key={idx} className="text-gray-100">• {conductor.trim()}</li>
             ))}
           </ul>
         </TooltipContent>

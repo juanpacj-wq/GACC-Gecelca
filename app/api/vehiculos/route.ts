@@ -47,6 +47,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Si se provee un id_vehiculo, filtrar y devolver solo ese vehículo
+    if (body.id_vehiculo && Array.isArray(data)) {
+      const vehiculo = data.find((v: any) => v.id_vehiculo === body.id_vehiculo);
+      if (vehiculo) {
+        return NextResponse.json(vehiculo);
+      } else {
+        return NextResponse.json({ error: true, message: 'Vehículo no encontrado' }, { status: 404 });
+      }
+    }
+
     return NextResponse.json(data);
 
   } catch (error) {
